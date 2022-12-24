@@ -1,203 +1,183 @@
-//Credit WwW.ArifBillah.CoM
-
-#include <bits/stdc++.h>
-#define max 20
+#include<iostream>
+#include<conio.h>
+#include<cstdlib>
+#include<cstring>
+#include<cstdio>
+#include<windows.h>
+#include<unistd.h>
 using namespace std;
 
-struct Ticket {
-	string name;
-	long int code;
-	string Movi_Name;
-	int price;
-	int date;
-};
-
-int num;
 
 
-Ticket tic[max], ttic[max],
-	sorttic[max], sorttic1[max];
+    struct Ticket{
+        // Variables for Ticket details
+        char name[30];
+        char id[5];
+        char movi[10];
+        int duration;
+        int price;
+        int time;
+    };
+        char name[30];
+        char id[5];
+        char movi[10];
+        int duration;
+        int price;
+        int time;
+        
+        
+        // Utility functions
+        void waitForEnter(void){
+            cout<<"\n\n\n Enter for Back \n\n";
+            cin.get();
+            cin.get();
+        }
 
-void build()
-{
-	cout << "Maximum Number can be "
-		<< max << "\n";
+        // Functions to perform desired actions
+        void listTickets(void){
+            system("cls");
+            FILE *file;
+            file= fopen("anika.txt", "r");
+            cout<<"\n name  id  movi\n";
+            while(fscanf(file, "%s %s %s %d %d %d", &name[0], &id[0] , &movi[0], &duration, &price, &time)!= EOF)
+                cout<<"\n"<<name<<"\t"<<id<<"\t"<<movi;
+            fclose(file);
+            waitForEnter();
+        }
 
-	cout << "Enter the number of "
-		<< "Number required: ";
-	cin >> num;
+        void showDetails(void){
+            system("cls");
+            FILE *file;
+            char checkId[5];
+            cout<<"Enter Ticket id: ";
+            cin>>checkId;
+            file= fopen("anika.txt", "r");
+            while(fscanf(file, "%s %s %s %d %d %d", &name[0], &id[0] , &movi[0], &duration, &price, &time)!=EOF)
+                if(strcmp(checkId,id)==0){
+                    cout<<"\nname: "<<name;
+                    cout<<"\nid: "<<id;
+                    cout<<"\nmovi: "<<movi;
+                    cout<<"\nduration: "<<duration;
+                    cout<<"\nprice: "<<price;
+                    cout<<"\ntime: "<<time;
+                }
+            fclose(file);
+            waitForEnter();
+        }
 
-	cout << "Enter the data:\n";
+        void editExisting(void){
+            system("cls");
+            char checkId[5];
+            cout<<"Enter Ticket id: ";
+            cin>>checkId;
+            char newmovi[10];
+            cout<<"Enter new movi: ";
+            cin>>newmovi;
+            int newprice;
+            cout<<"Enter new price: ";
+            cin>>newprice;
+            FILE *file, *tmpfile;
+            file= fopen("anika.txt", "r");
+            tmpfile= fopen("tmp.txt", "w");
+            while(fscanf(file, "%s %s %s %d %d %d", &name[0], &id[0] , &movi[0], &duration, &price, &time)!=EOF){
+                if(strcmp(checkId, id)==0)
+                    fprintf(tmpfile, "%s %s %s %d %d %d \n", name, id, newmovi, duration, newprice, time );
+                else
+                    fprintf(tmpfile, "%s %s %s %d %d %d \n", name, id, movi, duration, price, time );
+            }
+            fclose(file);
+            fclose(tmpfile);
+            int isRemoved= remove("anika.txt");
+            int isRenamed= rename("tmp.txt", "anika.txt");
+            waitForEnter();
+        }
 
-	for (int i = 0; i < num; i++) {
-		cout << "Customer Name ";
-		cin >> tic[i].name;
+        void addNewTicket(void){
+            system("cls");
+            cout<<"\n Enter Name: ";
+            cin>>name;
+            cout<<"\n Enter Ticket ID: ";
+            cin>>id;
+            cout<<"\n Enter movi Name: ";
+            cin>>movi;
+            cout<<"\n Enter Movi duration: ";
+            cin>>duration;
+            cout<<"\n Enter Ticket price: ";
+            cin>>price;
+            cout<<"\n Enter show time: ";
+            cin>>time;
 
-		cout << "Ticket ID ";
-		cin >> tic[i].code;
+            char ch;
+            cout<<"\nEnter 'y' to save above information\n";
+            cin>>ch;
+            if(ch=='y'){
+                FILE  *file;
+                file= fopen("anika.txt","a");
+                fprintf(file, "%s %s %s %d %d %d \n", name, id, movi, duration, price, time );
+                fclose(file);
+                cout<<"\nNew Ticket has been added to anikabase\n";
+            }
+            else
+                addNewTicket();
+            waitForEnter();
+        }
 
-		cout << "Movi Name ";
-		cin >> tic[i].Movi_Name;
+        void deleteTicketDetails(void){
+            system("cls");
+            char checkId[5];
+            cout<<"Enter Ticket id: ";
+            cin>>checkId;
+            char ch;
+            cout<<"Enter 'y' to confirm deletion \n";
+            cin>>ch;
+            if(ch=='y'){
+                FILE *file, *tmpfile;
+                file= fopen("anika.txt", "r");
+                tmpfile= fopen("tmp.txt", "w");
+                while(fscanf(file, "%s %s %s %d %d %d", &name[0], &id[0] , &movi[0], &duration, &price, &time)!=EOF)
+                    if(strcmp(checkId, id)!=0)
+                        fprintf(tmpfile, "%s %s %s %d %d %d \n", name, id, movi, duration, price, time );
+                fclose(file);
+                fclose(tmpfile);
+                int isRemoved= remove("anika.txt");
+                int isRenamed= rename("tmp.txt", "anika.txt");
+                cout<<"\nDeletion Successful\n";
+                waitForEnter();
+            }
+            else
+                deleteTicketDetails();
+        }
 
-		cout << "price ";
-		cin >> tic[i].price;
-
-		cout << "date ";
-		cin >> tic[i].date;
-	}
-
-}
-
-// Function to insert the data into
-// given data type
-void insert()
-{
-	if (num < max) {
-		int i = num;
-		num++;
-
-		cout << "Enter the information \n";
-
-		cout << "Customer Name ";
-		cin >> tic[i].name;
-
-		cout << "Ticket ID ";
-		cin >> tic[i].code;
-
-		cout << "Movi Name ";
-		cin >> tic[i].Movi_Name;
-
-		cout << "price ";
-		cin >> tic[i].price;
-
-		cout << "date ";
-		cin >> tic[i].date;
-	}
-	else {
-		cout << "Ticket Table Full\n";
-	}
-
-}
-
-// Function to delete record at index i
-void deleteIndex(int i)
-{
-	for (int j = i; j < num - 1; j++) {
-		tic[j].name = tic[j + 1].name;
-		tic[j].code = tic[j + 1].code;
-		tic[j].Movi_Name
-			= tic[j + 1].Movi_Name;
-		tic[j].price = tic[j + 1].price;
-		tic[j].date = tic[j + 1].date;
-	}
-	return;
-}
-
-// Function to delete record
-void deleteRecord()
-{
-	cout << "Enter the Ticket ID "
-		<< "to Delete Record";
-
-	int code;
-
-	cin >> code;
-	for (int i = 0; i < num; i++) {
-		if (tic[i].code == code) {
-			deleteIndex(i);
-			num--;
-			break;
-		}
-	}
-}
-
-void searchRecord()
-{
-	cout << "Enter the Ticket"
-		<< " ID to Search Record";
-
-	int code;
-	cin >> code;
-
-	for (int i = 0; i < num; i++) {
-
-		// If the data is found
-		if (tic[i].code == code) {
-			cout << "Customer Name "
-				<< tic[i].name << "\n";
-
-			cout << "Ticket ID "
-				<< tic[i].code << "\n";
-
-			cout << "Movi Name "
-				<< tic[i].Movi_Name << "\n";
-
-			cout << "price "
-				<< tic[i].price << "\n";
-
-			cout << "date "
-				<< tic[i].date << "\n";
-			break;
-		}
-	}
-
-}
-// Ticket display
-void Display()
-{
-	for(int i=0; i<20; i++ ){
-	if (tic[i].code != 0) {
-			cout << "Ticket information \n";
-			cout << " #Name: ";
-			cout << tic[i].name;
-
-			cout << " #Ticket_ID: ";
-			cout << tic[i].code;
-
-			cout << " #Movi_Name: ";
-			cout << tic[i].Movi_Name;
-
-			cout << " #price ";
-			cout << tic[i].price;
-
-			cout << " #date; ";
-			cout << tic[i].date;
-
-			continue;
-		}
-	}
-}
-
-// Driver Code
 int main()
 {
-	cout << "Enter The choice:\n\n";
-	cout << "1. Build Table	\n";
-	cout << "2. Insert a data\n";
-	cout << "3. Delete data\n";
-	cout << "4. Search a data\n";
-	cout << "5. Display Information\n";
-	cout << "5. Exit\n";
-
 	int choice;
+
     do{
-    cout << "\n\nEnter the choice:";
+	cout << "Enter The choice:\n\n";
+	cout << "1. Display Ticket list	\n";
+	cout << "2. Show Individual ticket information\n";
+	cout << "3. Update ticket details\n";
+	cout << "4. Add new Ticket\n";
+	cout << "5. delete Ticket\n";
+	cout << "5. Exit\n";
+	
+    cout << "\n\nEnter your choice:";
     cin >> choice;
         switch(choice){
 
-        case 1: build();
+        case 1: listTickets();
         break;
-        case 2: insert();
+        case 2: showDetails();
         break;
-        case 3: deleteRecord();
+        case 3: editExisting();
         break;
-        case 4: searchRecord();
+        case 4: addNewTicket();
         break;
-		case 5:	Display();
+		case 5:	deleteTicketDetails();
         break;
 		case 6: cout << "\nExit!";
         break;
-        default: cout << "\nWrong Choice!!";
+        default: cout << "\nWrong Choice!! Try Again!!";
         }
     }while(choice != 6);
     return 0;
